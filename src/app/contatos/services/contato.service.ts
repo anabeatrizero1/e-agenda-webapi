@@ -3,7 +3,9 @@ import { Injectable } from "@angular/core";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { LocalStorageService } from "src/app/auth/services/local-storage.service";
 import { environment } from "src/environments/environment";
-import { ListarContatoViewModel } from "../view-model/listar-contato.view-model";
+import { FormsContatoViewModel } from "../view-models/forms-contato.view-model";
+import { ListarContatoViewModel } from "../view-models/listar-contato.view-model";
+import { VisualizarContatoViewModel } from "../view-models/visualizar-contato.view-model";
 
 @Injectable()
 export class ContatoService {
@@ -14,6 +16,29 @@ export class ContatoService {
     private localStorageService: LocalStorageService
   ) { }
 
+  public inserir(contato: FormsContatoViewModel): Observable<FormsContatoViewModel> {
+    const resposta = this.http
+      .post<FormsContatoViewModel>(this.apiUrl + 'contatos', contato, this.obterHeadersAutorizacao())
+      .pipe(map(this.processarDados), catchError(this.processarFalha));
+
+    return resposta;
+  }
+
+  public editar(contato: FormsContatoViewModel): Observable<FormsContatoViewModel> {
+    const resposta = this.http
+      .put<FormsContatoViewModel>(this.apiUrl + 'contatos/' + contato.id, contato, this.obterHeadersAutorizacao())
+      .pipe(map(this.processarDados), catchError(this.processarFalha));
+
+    return resposta;
+  }
+
+  public excluir(id: string): Observable<string> {
+    const resposta = this.http
+      .delete<string>(this.apiUrl + 'contatos/' + id, this.obterHeadersAutorizacao())
+      .pipe(map(this.processarDados), catchError(this.processarFalha));
+
+    return resposta;
+  }
 
   public selecionarTodos(): Observable<ListarContatoViewModel[]> {
     const resposta = this.http
@@ -23,6 +48,21 @@ export class ContatoService {
     return resposta;
   }
 
+  public selecionarPorId(id: string): Observable<FormsContatoViewModel> {
+    const resposta = this.http
+      .get<FormsContatoViewModel>(this.apiUrl + 'contatos/' + id, this.obterHeadersAutorizacao())
+      .pipe(map(this.processarDados), catchError(this.processarFalha));
+
+    return resposta;
+  }
+
+  public selecionarContatoCompletoPorId(id: string): Observable<VisualizarContatoViewModel> {
+    const resposta = this.http
+    .get<VisualizarContatoViewModel>(this.apiUrl + 'contatos/visualizacao-completa/' + id, this.obterHeadersAutorizacao())
+    .pipe(map(this.processarDados), catchError(this.processarFalha))
+
+     return resposta;
+  }
 
   private obterHeadersAutorizacao() {
     const token = this.localStorageService.obterTokenUsuario();

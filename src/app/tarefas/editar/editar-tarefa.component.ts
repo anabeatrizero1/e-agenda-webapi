@@ -27,7 +27,7 @@ export class EditarTarefaComponent implements OnInit {
     private router: Router,
     private tarefaService: TarefaService
   ) {
-    title.setTitle('Editar Tarefa - e-Agenda');
+    title.setTitle('Editar Tarefa - eAgenda');
   }
 
   ngOnInit(): void {
@@ -100,7 +100,6 @@ export class EditarTarefaComponent implements OnInit {
     if (this.formTarefa.invalid) return;
 
     this.tarefaFormVM = Object.assign({}, this.tarefaFormVM, this.formTarefa.value);
-
 
     this.tarefaService.editar(this.tarefaFormVM)
       .subscribe({
